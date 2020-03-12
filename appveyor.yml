@@ -3,7 +3,7 @@ build: false
 environment:
     PYTHON: "C:\\Python37"
 
-    CONAN_REFERENCE: "librdkfaka/1.3.0"
+    CONAN_REFERENCE: "librdkafka/1.3.0"
     CONAN_USERNAME: "mosleh"
     CONAN_CHANNEL: "stable"
     CONAN_UPLOAD: "https://api.bintray.com/conan/sam-mosleh/conan"
