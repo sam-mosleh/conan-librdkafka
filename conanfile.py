@@ -88,3 +88,7 @@ class LibrdkafkaConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["rdkafka", "rdkafka++"]
+        if self.settings.os == "Windows":
+            self.cpp_info.system_libs.extend(["crypt32", "ws2_32"])
+        else:
+            self.cpp_info.system_libs.append("pthread")
