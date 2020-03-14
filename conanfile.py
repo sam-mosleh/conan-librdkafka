@@ -58,6 +58,23 @@ class LibrdkafkaConan(ConanFile):
                                                       self.version)
         tools.get(download_url, sha256=self.sha256)
         os.rename("{}-{}".format(self.name, self.version), self.sources_folder)
+        self._set_variables_in_c_header_file()
+        self._set_variables_in_cpp_header_file()
+
+    def _set_variables_in_c_header_file(self):
+        header_path = os.path.join(self.sources_folder, "src", "rdkafka.h")
+        self._fix_definition(header_path, "LIBRDKAFKA_EXPORTS", self.options.shared)
+        self._fix_definition(header_path, "LIBRDKAFKA_STATICLIB", not self.options.shared)
+
+    def _set_variables_in_cpp_header_file(self):
+        header_path = os.path.join(self.sources_folder, "src-cpp", "rdkafkacpp.h")
+        self._fix_definition(header_path, "LIBRDKAFKACPP_EXPORTS", self.options.shared)
+        self._fix_definition(header_path, "LIBRDKAFKA_STATICLIB", not self.options.shared)
+
+    def _fix_definition(self, header_path, def_name, is_defined):
+        tools.replace_in_file(header_path,
+                              "#ifdef {}".format(def_name),
+                              "#if {}  //{}".format(int(is_defined == True), def_name))
 
     def _configure_cmake(self):
         if self._cmake is not None:
