@@ -37,6 +37,7 @@ class LibrdkafkaConan(ConanFile):
     exports_sources = "CMakeLists.txt"
     sources_folder = "sources"
     sha256 = "465cab533ebc5b9ca8d97c90ab69e0093460665ebaf38623209cf343653c76d2"
+    _cmake = None
 
     def configure(self):
         if self.options.ssl:
@@ -58,27 +59,34 @@ class LibrdkafkaConan(ConanFile):
         tools.get(download_url, sha256=self.sha256)
         os.rename("{}-{}".format(self.name, self.version), self.sources_folder)
 
-    def build(self):
-        cmake = CMake(self)
-        cmake.definitions[
+    def _configure_cmake(self):
+        if self._cmake is not None:
+            return self._cmake
+        self._cmake = CMake(self)
+        self._cmake.definitions[
             'WITHOUT_OPTIMIZATION'] = self.settings.build_type == "Debug"
-        cmake.definitions['RDKAFKA_BUILD_STATIC'] = not self.options.shared
-        cmake.definitions['RDKAFKA_BUILD_EXAMPLES'] = False
-        cmake.definitions['RDKAFKA_BUILD_TESTS'] = False
-        cmake.definitions['WITHOUT_WIN32_CONFIG'] = True
+        self._cmake.definitions['RDKAFKA_BUILD_STATIC'] = not self.options.shared
+        self._cmake.definitions['RDKAFKA_BUILD_EXAMPLES'] = False
+        self._cmake.definitions['RDKAFKA_BUILD_TESTS'] = False
+        self._cmake.definitions['WITHOUT_WIN32_CONFIG'] = True
+        self._cmake.definitions['WITH_BUNDLED_SSL'] = False
 
-        cmake.definitions['WITH_ZLIB'] = self.options.zlib
-        cmake.definitions['WITH_ZSTD'] = self.options.zstd
-        cmake.definitions['WITH_PLUGINS'] = self.options.plugins
-        cmake.definitions['WITH_SSL'] = self.options.ssl
-        cmake.definitions['WITH_SASL'] = self.options.sasl
-        cmake.definitions['ENABLE_LZ4_EXT'] = self.options.lz4
+        self._cmake.definitions['WITH_ZLIB'] = self.options.zlib
+        self._cmake.definitions['WITH_ZSTD'] = self.options.zstd
+        self._cmake.definitions['WITH_PLUGINS'] = self.options.plugins
+        self._cmake.definitions['WITH_SSL'] = self.options.ssl
+        self._cmake.definitions['WITH_SASL'] = self.options.sasl
+        self._cmake.definitions['ENABLE_LZ4_EXT'] = self.options.lz4
+        self._cmake.configure()
+        return self._cmake
 
-        cmake.configure()
+    def build(self):
+        cmake = self._configure_cmake()
         cmake.build()
-        cmake.install()
 
     def package(self):
+        cmake = self._configure_cmake()
+        cmake.install()
         self.copy("*.h", dst="include", src=self.name)
         self.copy("*.lib", dst="lib", keep_path=False)
         self.copy("*.dll", dst="bin", keep_path=False)
