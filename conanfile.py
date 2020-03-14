@@ -63,12 +63,12 @@ class LibrdkafkaConan(ConanFile):
 
     def _set_variables_in_c_header_file(self):
         header_path = os.path.join(self.sources_folder, "src", "rdkafka.h")
-        self._fix_definition(header_path, "LIBRDKAFKA_EXPORTS", self.options.shared)
+        self._fix_definition(header_path, "LIBRDKAFKA_EXPORTS", not self.options.shared)
         self._fix_definition(header_path, "LIBRDKAFKA_STATICLIB", not self.options.shared)
 
     def _set_variables_in_cpp_header_file(self):
         header_path = os.path.join(self.sources_folder, "src-cpp", "rdkafkacpp.h")
-        self._fix_definition(header_path, "LIBRDKAFKACPP_EXPORTS", self.options.shared)
+        self._fix_definition(header_path, "LIBRDKAFKACPP_EXPORTS", not self.options.shared)
         self._fix_definition(header_path, "LIBRDKAFKA_STATICLIB", not self.options.shared)
 
     def _fix_definition(self, header_path, def_name, is_defined):
