@@ -58,23 +58,6 @@ class LibrdkafkaConan(ConanFile):
                                                       self.version)
         tools.get(download_url, sha256=self.sha256)
         os.rename("{}-{}".format(self.name, self.version), self.sources_folder)
-        self._set_variables_in_c_header_file()
-        self._set_variables_in_cpp_header_file()
-
-    def _set_variables_in_c_header_file(self):
-        header_path = os.path.join(self.sources_folder, "src", "rdkafka.h")
-        self._fix_definition(header_path, "LIBRDKAFKA_EXPORTS", not self.options.shared)
-        self._fix_definition(header_path, "LIBRDKAFKA_STATICLIB", not self.options.shared)
-
-    def _set_variables_in_cpp_header_file(self):
-        header_path = os.path.join(self.sources_folder, "src-cpp", "rdkafkacpp.h")
-        self._fix_definition(header_path, "LIBRDKAFKACPP_EXPORTS", not self.options.shared)
-        self._fix_definition(header_path, "LIBRDKAFKA_STATICLIB", not self.options.shared)
-
-    def _fix_definition(self, header_path, def_name, is_defined):
-        tools.replace_in_file(header_path,
-                              "#ifdef {}".format(def_name),
-                              "#if {}  //{}".format(int(is_defined == True), def_name))
 
     def _configure_cmake(self):
         if self._cmake is not None:
@@ -113,7 +96,10 @@ class LibrdkafkaConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["rdkafka", "rdkafka++"]
-        if self.settings.os == "Windows":
+        if self.settings.compiler == "Visual Studio":
             self.cpp_info.system_libs.extend(["crypt32", "ws2_32"])
         else:
-            self.cpp_info.system_libs.append("pthread")
+            if self.settings.os == "Linux":
+                self.cpp_info.system_libs.extend(["pthread", "m"])
+        if not self.options.shared:
+            self.cpp_info.defines.append("LIBRDKAFKA_STATICLIB")
