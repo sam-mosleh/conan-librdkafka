@@ -6,5 +6,8 @@ if __name__ == "__main__":
                                  visual_runtimes=["MD"])
     builder.add_common_builds(shared_option_name="librdkafka:shared",
                               pure_c=False,
-                              build_all_options_values=None)
+                              build_all_options_values=[
+                                  "librdkafka:zlib", "librdkafka:zstd",
+                                  "librdkafka:ssl", "librdkafka:lz4"
+                              ])
     builder.run()
