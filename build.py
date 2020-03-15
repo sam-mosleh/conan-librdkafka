@@ -7,7 +7,8 @@ if __name__ == "__main__":
     builder.add_common_builds(shared_option_name="librdkafka:shared",
                               pure_c=False,
                               build_all_options_values=[
-                                  "librdkafka:zlib", "librdkafka:zstd",
-                                  "librdkafka:ssl", "librdkafka:lz4"
+                                  "librdkafka:zlib",
+                                  "librdkafka:zstd",
+                                  "librdkafka:ssl",
                               ])
     builder.run()
