@@ -58,6 +58,9 @@ class LibrdkafkaConan(ConanFile):
                                                       self.version)
         tools.get(download_url, sha256=self.sha256)
         os.rename("{}-{}".format(self.name, self.version), self.sources_folder)
+        tools.replace_in_file(os.path.join(self.sources_folder, "CMakeLists.txt"),
+                              "set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} \"${CMAKE_SOURCE_DIR}/packaging/cmake/Modules/\")", 
+                              "")
 
     def _configure_cmake(self):
         if self._cmake is not None:
