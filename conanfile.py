@@ -34,9 +34,8 @@ class LibrdkafkaConan(ConanFile):
         "lz4": False,
     }
     generators = "cmake"
-    exports_sources = "CMakeLists.txt"
+    exports_sources = "CMakeLists.txt", "patches/**"
     sources_folder = "sources"
-    sha256 = "465cab533ebc5b9ca8d97c90ab69e0093460665ebaf38623209cf343653c76d2"
     _cmake = None
 
     def configure(self):
@@ -56,11 +55,12 @@ class LibrdkafkaConan(ConanFile):
     def source(self):
         download_url = "{}/archive/v{}.tar.gz".format(self.homepage,
                                                       self.version)
-        tools.get(download_url, sha256=self.sha256)
+        tools.get(download_url, sha256=self.conan_data["sources"][self.version]["sha256"])
         os.rename("{}-{}".format(self.name, self.version), self.sources_folder)
-        tools.replace_in_file(os.path.join(self.sources_folder, "CMakeLists.txt"),
-                              "set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} \"${CMAKE_SOURCE_DIR}/packaging/cmake/Modules/\")", 
-                              "")
+
+    def _patch_sources(self):
+        for patch in self.conan_data["patches"][self.version]:
+            tools.patch(base_path=self.sources_folder, **patch)
 
     def _configure_cmake(self):
         if self._cmake is not None:
@@ -85,6 +85,7 @@ class LibrdkafkaConan(ConanFile):
         return self._cmake
 
     def build(self):
+        self._patch_sources()
         cmake = self._configure_cmake()
         cmake.build()
 
