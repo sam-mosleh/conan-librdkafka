@@ -34,9 +34,8 @@ class LibrdkafkaConan(ConanFile):
         "lz4": False,
     }
     generators = "cmake"
-    exports_sources = "CMakeLists.txt"
+    exports_sources = "CMakeLists.txt", "patches/**"
     sources_folder = "sources"
-    sha256 = "465cab533ebc5b9ca8d97c90ab69e0093460665ebaf38623209cf343653c76d2"
     _cmake = None
 
     def configure(self):
@@ -56,8 +55,12 @@ class LibrdkafkaConan(ConanFile):
     def source(self):
         download_url = "{}/archive/v{}.tar.gz".format(self.homepage,
                                                       self.version)
-        tools.get(download_url, sha256=self.sha256)
+        tools.get(download_url, sha256=self.conan_data["sources"][self.version]["sha256"])
         os.rename("{}-{}".format(self.name, self.version), self.sources_folder)
+
+    def _patch_sources(self):
+        for patch in self.conan_data["patches"][self.version]:
+            tools.patch(base_path=self.sources_folder, **patch)
 
     def _configure_cmake(self):
         if self._cmake is not None:
@@ -65,7 +68,8 @@ class LibrdkafkaConan(ConanFile):
         self._cmake = CMake(self)
         self._cmake.definitions[
             'WITHOUT_OPTIMIZATION'] = self.settings.build_type == "Debug"
-        self._cmake.definitions['RDKAFKA_BUILD_STATIC'] = not self.options.shared
+        self._cmake.definitions[
+            'RDKAFKA_BUILD_STATIC'] = not self.options.shared
         self._cmake.definitions['RDKAFKA_BUILD_EXAMPLES'] = False
         self._cmake.definitions['RDKAFKA_BUILD_TESTS'] = False
         self._cmake.definitions['WITHOUT_WIN32_CONFIG'] = True
@@ -81,6 +85,7 @@ class LibrdkafkaConan(ConanFile):
         return self._cmake
 
     def build(self):
+        self._patch_sources()
         cmake = self._configure_cmake()
         cmake.build()
 
