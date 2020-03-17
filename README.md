@@ -1,7 +1,7 @@
 
 # Conan-LibRdKafka
 
-[![Download](https://api.bintray.com/packages/sam-mosleh/conan/librdkafka%3Amosleh/images/download.svg)](https://bintray.com/sam-mosleh/conan/librdkafka%3Amosleh/_latestVersion) [![Build Status](https://travis-ci.com/sam-mosleh/conan-librdkafka.svg?branch=release%2F1.3.0)](https://travis-ci.com/sam-mosleh/conan-librdkafka) [![Build status](https://ci.appveyor.com/api/projects/status/psbsuol9360sdn79/branch/release/0.10.0?svg=true)](https://ci.appveyor.com/project/sam-mosleh/conan-librdkafka/branch/master) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Download](https://api.bintray.com/packages/sam-mosleh/conan/librdkafka%3Amosleh/images/download.svg)](https://bintray.com/sam-mosleh/conan/librdkafka%3Amosleh/_latestVersion) [![Build Status](https://travis-ci.com/sam-mosleh/conan-librdkafka.svg?branch=release%2F1.3.0)](https://travis-ci.com/sam-mosleh/conan-librdkafka) [![Build status](https://ci.appveyor.com/api/projects/status/psbsuol9360sdn79/branch/release/1.3.0?svg=true)](https://ci.appveyor.com/project/sam-mosleh/conan-librdkafka/branch/release/1.3.0) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Conan C/C++ package for [LibRdKafka](https://github.com/edenhill/librdkafka) library.
 
