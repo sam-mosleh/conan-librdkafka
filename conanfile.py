@@ -66,8 +66,11 @@ class LibrdkafkaConan(ConanFile):
         if self._cmake is not None:
             return self._cmake
         self._cmake = CMake(self)
-        self._cmake.definitions[
-            'WITHOUT_OPTIMIZATION'] = self.settings.build_type == "Debug"
+        self._cmake.definitions['WITHOUT_OPTIMIZATION'] = \
+        self._cmake.definitions['ENABLE_DEVEL'] = \
+        self._cmake.definitions['ENABLE_REFCNT_DEBUG'] = \
+        self._cmake.definitions['ENABLE_SHAREDPTR_DEBUG'] = \
+        (self.settings.build_type == "Debug")
         self._cmake.definitions[
             'RDKAFKA_BUILD_STATIC'] = not self.options.shared
         self._cmake.definitions['RDKAFKA_BUILD_EXAMPLES'] = False
